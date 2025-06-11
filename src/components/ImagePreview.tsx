@@ -50,27 +50,12 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
               </div>
             </div>
           ) : processedImage ? (
-            <div className="w-full h-64 flex items-center justify-center rounded-lg relative overflow-hidden">
-              {/* Checkered background pattern to show transparency */}
-              <div 
-                className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(45deg, #374151 25%, transparent 25%), 
-                    linear-gradient(-45deg, #374151 25%, transparent 25%), 
-                    linear-gradient(45deg, transparent 75%, #374151 75%), 
-                    linear-gradient(-45deg, transparent 75%, #374151 75%)
-                  `,
-                  backgroundSize: '20px 20px',
-                  backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
-                }}
-              />
-              <img
-                src={processedImage}
-                alt="Background Removed"
-                className="max-w-full max-h-full object-contain relative z-10"
-              />
-            </div>
+            <img
+              src={processedImage}
+              alt="Processed"
+              className="w-full h-64 object-contain rounded-lg"
+              style={{ backgroundColor: 'transparent' }}
+            />
           ) : (
             <div className="w-full h-64 flex items-center justify-center border-2 border-dashed border-gray-600 rounded-lg">
               <p className="text-gray-500">Processed image will appear here</p>
