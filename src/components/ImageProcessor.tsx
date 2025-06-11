@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Upload, Download, Loader2, RotateCcw, Image as ImageIcon } from 'lucide-react';
+import { Download, Loader2, RotateCcw, Scissors } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { processImage } from '../services/clipdropApi';
 import { checkRateLimit } from '../utils/rateLimit';
