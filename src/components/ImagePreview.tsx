@@ -50,12 +50,13 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
               </div>
             </div>
           ) : processedImage ? (
-            <img
-              src={processedImage}
-              alt="Processed"
-              className="w-full h-64 object-contain rounded-lg"
-              style={{ backgroundColor: 'transparent' }}
-            />
+            <div className="w-full h-64 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg">
+              <img
+                src={processedImage}
+                alt="Background Removed"
+                className="max-w-full max-h-full object-contain rounded-lg"
+              />
+            </div>
           ) : (
             <div className="w-full h-64 flex items-center justify-center border-2 border-dashed border-gray-600 rounded-lg">
               <p className="text-gray-500">Processed image will appear here</p>
