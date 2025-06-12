@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, Github } from 'lucide-react';
+import { X, Mail, Lock, Github, AlertCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -13,13 +13,45 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { signIn, signUp, signInWithGoogle, signInWithGitHub } = useAuth();
 
   if (!isOpen) return null;
 
+  const getErrorMessage = (error: any): string => {
+    if (!error?.message) return 'An unexpected error occurred';
+    
+    const message = error.message.toLowerCase();
+    
+    if (message.includes('invalid login credentials') || message.includes('invalid_credentials')) {
+      return isSignUp 
+        ? 'Unable to create account. Please check your email and password.'
+        : 'Invalid email or password. Please check your credentials and try again.';
+    }
+    
+    if (message.includes('email not confirmed')) {
+      return 'Please check your email and click the confirmation link before signing in.';
+    }
+    
+    if (message.includes('user already registered')) {
+      return 'An account with this email already exists. Try signing in instead.';
+    }
+    
+    if (message.includes('password should be at least')) {
+      return 'Password must be at least 6 characters long.';
+    }
+    
+    if (message.includes('invalid email')) {
+      return 'Please enter a valid email address.';
+    }
+    
+    return error.message;
+  };
+
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
       const { error } = isSignUp 
@@ -27,13 +59,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         : await signIn(email, password);
 
       if (error) {
-        toast.error(error.message);
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
+        toast.error(errorMessage);
       } else {
         toast.success(isSignUp ? 'Account created successfully!' : 'Signed in successfully!');
+        setError(null);
         onClose();
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      const errorMessage = 'An unexpected error occurred. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -41,13 +78,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleGoogleAuth = async () => {
     setLoading(true);
+    setError(null);
     try {
       const { error } = await signInWithGoogle();
       if (error) {
-        toast.error(error.message);
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
+        toast.error(errorMessage);
       }
     } catch (error) {
-      toast.error('Failed to sign in with Google');
+      const errorMessage = 'Failed to sign in with Google. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -55,16 +97,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleGitHubAuth = async () => {
     setLoading(true);
+    setError(null);
     try {
       const { error } = await signInWithGitHub();
       if (error) {
-        toast.error(error.message);
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
+        toast.error(errorMessage);
       }
     } catch (error) {
-      toast.error('Failed to sign in with GitHub');
+      const errorMessage = 'Failed to sign in with GitHub. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleModeSwitch = () => {
+    setIsSignUp(!isSignUp);
+    setError(null);
+    setEmail('');
+    setPassword('');
   };
 
   return (
@@ -88,6 +142,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             }
           </p>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start space-x-2">
+            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
+        )}
 
         <form onSubmit={handleEmailAuth} className="space-y-4 mb-6">
           <div>
@@ -157,7 +218,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
         <div className="text-center">
           <button
-            onClick={() => setIsSignUp(!isSignUp)}
+            onClick={handleModeSwitch}
             className="text-blue-400 hover:text-blue-300 text-sm"
           >
             {isSignUp 
@@ -166,6 +227,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             }
           </button>
         </div>
+
+        {!isSignUp && (
+          <div className="mt-4 text-center">
+            <p className="text-xs text-gray-500">
+              Make sure you're using the correct email and password. If you don't have an account, click "Sign up" above.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
