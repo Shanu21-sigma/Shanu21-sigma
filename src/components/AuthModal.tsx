@@ -48,6 +48,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     return error.message;
   };
 
+  const closeModal = () => {
+    setError(null);
+    setEmail('');
+    setPassword('');
+    setLoading(false);
+    onClose();
+  };
+
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -64,8 +72,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         toast.error(errorMessage);
       } else {
         toast.success(isSignUp ? 'Account created successfully!' : 'Signed in successfully!');
-        setError(null);
-        onClose();
+        closeModal();
       }
     } catch (error) {
       const errorMessage = 'An unexpected error occurred. Please try again.';
@@ -85,6 +92,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         const errorMessage = getErrorMessage(error);
         setError(errorMessage);
         toast.error(errorMessage);
+      } else {
+        // For OAuth, the redirect will handle the success case
+        // The modal will be closed when the user returns
+        closeModal();
       }
     } catch (error) {
       const errorMessage = 'Failed to sign in with Google. Please try again.';
@@ -104,6 +115,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         const errorMessage = getErrorMessage(error);
         setError(errorMessage);
         toast.error(errorMessage);
+      } else {
+        // For OAuth, the redirect will handle the success case
+        // The modal will be closed when the user returns
+        closeModal();
       }
     } catch (error) {
       const errorMessage = 'Failed to sign in with GitHub. Please try again.';
@@ -125,7 +140,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="glass-card max-w-md w-full p-6 relative">
         <button
-          onClick={onClose}
+          onClick={closeModal}
           className="absolute top-4 right-4 text-gray-400 hover:text-white"
         >
           <X className="w-5 h-5" />
