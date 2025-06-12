@@ -1,7 +1,7 @@
 const CLIPDROP_API_URL = 'https://clipdrop-api.co/remove-background/v1';
 const API_KEY = 'e7096a97880078440df948cb4bb8b336aa569bf02030b8e413fb840a09dbf2c3bdf71188e588c6712b5b26cce6d197e2';
 
-export async function processImage(file: File): Promise<string> {
+export async function processImage(file: File): Promise<Blob> {
   const formData = new FormData();
   formData.append('image_file', file);
 
@@ -29,7 +29,7 @@ export async function processImage(file: File): Promise<string> {
     }
 
     const blob = await response.blob();
-    return URL.createObjectURL(blob);
+    return blob;
   } catch (error) {
     if (error instanceof Error) {
       throw error;
