@@ -108,7 +108,7 @@ export function useImages() {
     const fileName = `${Date.now()}.${fileExt}`;
     const filePath = `${user.id}/${fileName}`;
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(bucket)
       .upload(filePath, file);
 
