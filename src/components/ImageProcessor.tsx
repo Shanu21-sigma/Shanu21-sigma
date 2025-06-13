@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Download, Loader2, RotateCcw, Scissors } from 'lucide-react';
+import { Download, RotateCcw, Scissors } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { processImage } from '../services/clipdropApi';
 import { useAuth } from '../hooks/useAuth';
@@ -13,13 +13,13 @@ import AuthModal from './AuthModal';
 const ImageProcessor: React.FC = () => {
   const { user } = useAuth();
   const { createImageRecord, updateImageRecord, uploadToStorage } = useImages();
-  const { canMakeRequest, checkRateLimit } = useRateLimit();
+  const { checkRateLimit } = useRateLimit();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [currentImageRecord, setCurrentImageRecord] = useState<any>(null);
+  const [, setCurrentImageRecord] = useState<any>(null);
 
   const handleFileSelect = useCallback((file: File) => {
     // Validate file type
