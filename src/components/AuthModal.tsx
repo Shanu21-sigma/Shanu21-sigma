@@ -78,6 +78,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       if (error) {
         const errorMessage = getErrorMessage(error);
         setError(errorMessage);
+        setPassword(''); // Clear password on error
         toast.error(errorMessage);
       } else {
         toast.success(isSignUp ? 'Account created successfully!' : 'Signed in successfully!');
@@ -86,6 +87,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     } catch (error) {
       const errorMessage = 'An unexpected error occurred. Please try again.';
       setError(errorMessage);
+      setPassword(''); // Clear password on error
       toast.error(errorMessage);
     } finally {
       setLoading(false);
