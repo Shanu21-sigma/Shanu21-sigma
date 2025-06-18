@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, Github, AlertCircle } from 'lucide-react';
+import { X, Mail, Lock, Github, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -13,8 +13,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { signIn, signUp, signInWithGoogle, signInWithGitHub } = useAuth();
+  const [showResendButton, setShowResendButton] = useState(false);
+  const { signIn, signUp, signInWithGoogle, signInWithGitHub, resendConfirmationEmail } = useAuth();
 
   if (!isOpen) return null;
 
@@ -30,6 +32,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
     
     if (message.includes('email not confirmed')) {
+      setShowResendButton(true);
       return 'Please check your email and click the confirmation link before signing in.';
     }
     
@@ -57,6 +60,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setEmail('');
     setPassword('');
     setLoading(false);
+    setShowResendButton(false);
     onClose();
   };
 
@@ -64,6 +68,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setShowResendButton(false);
 
     try {
       const { error } = isSignUp 
@@ -84,6 +89,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      toast.error('Please enter your email address first');
+      return;
+    }
+
+    setResendingEmail(true);
+    try {
+      const { error } = await resendConfirmationEmail(email);
+      if (error) {
+        toast.error('Failed to resend confirmation email. Please try again.');
+      } else {
+        toast.success('Confirmation email sent! Please check your inbox.');
+        setShowResendButton(false);
+      }
+    } catch (error) {
+      toast.error('Failed to resend confirmation email. Please try again.');
+    } finally {
+      setResendingEmail(false);
     }
   };
 
@@ -132,6 +159,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setError(null);
     setEmail('');
     setPassword('');
+    setShowResendButton(false);
   };
 
   return (
@@ -159,7 +187,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         {error && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start space-x-2">
             <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-            <p className="text-red-400 text-sm">{error}</p>
+            <div className="flex-1">
+              <p className="text-red-400 text-sm">{error}</p>
+              {showResendButton && (
+                <button
+                  onClick={handleResendConfirmation}
+                  disabled={resendingEmail}
+                  className="mt-2 flex items-center space-x-1 text-blue-400 hover:text-blue-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <RefreshCw className={`w-4 h-4 ${resendingEmail ? 'animate-spin' : ''}`} />
+                  <span>{resendingEmail ? 'Sending...' : 'Resend confirmation email'}</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 

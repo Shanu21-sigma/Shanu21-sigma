@@ -67,6 +67,14 @@ export function useAuth() {
     return { data, error };
   };
 
+  const resendConfirmationEmail = async (email: string) => {
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+    });
+    return { data, error };
+  };
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     return { error };
@@ -80,6 +88,7 @@ export function useAuth() {
     signUp,
     signInWithGoogle,
     signInWithGitHub,
+    resendConfirmationEmail,
     signOut,
   };
 }
