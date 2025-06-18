@@ -27,7 +27,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     
     if (message.includes('invalid login credentials') || message.includes('invalid_credentials')) {
       return isSignUp 
-        ? 'Unable to create account. Please check your email and password.'
+        ? 'Unable to create account. Please check your email and password, ensuring your password meets minimum requirements (e.g., at least 6 characters).'
         : 'Invalid email or password. Please check your credentials and try again.';
     }
     
