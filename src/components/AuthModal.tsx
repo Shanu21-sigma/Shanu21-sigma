@@ -44,6 +44,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     if (message.includes('invalid email')) {
       return 'Please enter a valid email address.';
     }
+
+    if (message.includes('oauth')) {
+      return 'OAuth authentication failed. Please try again or use email/password.';
+    }
     
     return error.message;
   };
@@ -92,13 +96,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         const errorMessage = getErrorMessage(error);
         setError(errorMessage);
         toast.error(errorMessage);
-      } else {
-        // For OAuth, the redirect will handle the success case
-        // The modal will be closed when the user returns
-        closeModal();
       }
+      // Note: For OAuth, success is handled by the redirect
     } catch (error) {
-      const errorMessage = 'Failed to sign in with Google. Please try again.';
+      const errorMessage = 'Failed to sign in with Google. Please try again or use email/password.';
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -115,13 +116,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         const errorMessage = getErrorMessage(error);
         setError(errorMessage);
         toast.error(errorMessage);
-      } else {
-        // For OAuth, the redirect will handle the success case
-        // The modal will be closed when the user returns
-        closeModal();
       }
+      // Note: For OAuth, success is handled by the redirect
     } catch (error) {
-      const errorMessage = 'Failed to sign in with GitHub. Please try again.';
+      const errorMessage = 'Failed to sign in with GitHub. Please try again or use email/password.';
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -210,7 +208,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <button
             onClick={handleGoogleAuth}
             disabled={loading}
-            className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
+            className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -224,7 +222,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <button
             onClick={handleGitHubAuth}
             disabled={loading}
-            className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Github className="w-5 h-5" />
             <span>Continue with GitHub</span>
@@ -246,7 +244,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         {!isSignUp && (
           <div className="mt-4 text-center">
             <p className="text-xs text-gray-500">
-              Make sure you're using the correct email and password. If you don't have an account, click "Sign up" above.
+              Having trouble with OAuth? Try using email and password instead.
             </p>
           </div>
         )}
